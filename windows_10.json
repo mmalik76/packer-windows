@@ -157,12 +157,6 @@
         "./scripts/compile-dotnet-assemblies.bat",
         "./scripts/compact.bat"
       ]
-    },
-	{
-      "type": "powershell",
-      "scripts": [
-        "./scripts/removeapp.ps1"
-      ]
     }
   ],
   "post-processors": [

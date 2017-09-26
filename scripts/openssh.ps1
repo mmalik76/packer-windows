@@ -17,7 +17,9 @@ if (!(Test-Path "C:\Program Files\OpenSSH\bin\ssh.exe")) {
     Start-Process "C:\Windows\Temp\openssh.exe" "/S /port=2222 /privsep=1 /password=D@rj33l1ng" -NoNewWindow -Wait
 }
 
-Stop-Service "OpenSSHd" -Force
+if (Test-Path "C:\Program Files\OpenSSH\bin\ssh.exe") {
+    Stop-Service "OpenSSHd" -Force
+}
 
 # ensure vagrant can log in
 Write-Output "Setting vagrant user file permissions"

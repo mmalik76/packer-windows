@@ -1,5 +1,30 @@
 {
   "builders": [
+	{
+      "type": "hyperv-iso",
+      "iso_url": "{{ user `iso_url` }}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_checksum": "{{ user `iso_checksum` }}",
+      "boot_wait": "2m",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_timeout": "2h",
+      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+      "floppy_files": [
+        "{{user `autounattend`}}",
+        "./scripts/fixnetwork.ps1",
+        "./scripts/microsoft-updates.bat",
+        "./scripts/win-updates.ps1",
+        "./scripts/openssh.ps1",
+        "./scripts/oracle-cert.cer"
+      ],
+	  "switch_name": "External",
+	  "enable_virtualization_extensions": true,
+	  "enable_mac_spoofing": true,
+	  "cpu": 2,
+      "disk_size": 61440,
+      "ram_size": 4096
+    },
     {
       "type": "vmware-iso",
       "iso_url": "{{user `iso_url`}}",
@@ -26,7 +51,7 @@
       "vmx_data": {
         "RemoteDisplay.vnc.enabled": "false",
         "RemoteDisplay.vnc.port": "5900",
-        "memsize": "2048",
+        "memsize": "4096",
         "numvcpus": "2",
         "scsi0.virtualDev": "lsisas1068"
       }
@@ -37,12 +62,13 @@
       "iso_checksum_type": "{{user `iso_checksum_type`}}",
       "iso_checksum": "{{user `iso_checksum`}}",
       "headless": false,
-      "boot_wait": "2m",
+      "boot_wait": "5m",
       "ssh_username": "vagrant",
       "ssh_password": "vagrant",
       "ssh_wait_timeout": "2h",
       "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
-      "guest_os_type": "Windows81_64",
+	  "post_shutdown_delay": "5m",
+      "guest_os_type": "Windows10_64",
       "disk_size": 61440,
       "floppy_files": [
         "{{user `autounattend`}}",
@@ -57,14 +83,20 @@
           "modifyvm",
           "{{.Name}}",
           "--memory",
-          "2048"
+          "4096"
         ],
         [
           "modifyvm",
           "{{.Name}}",
           "--cpus",
           "2"
-        ]
+        ],
+		[ 
+		  "modifyvm", 
+		  "{{.Name}}", 
+		  "--vram", 
+		  "256" 
+		]
       ]
     },
     {
@@ -91,7 +123,7 @@
       "prlctl": [
         [
           "set", "{{.Name}}",
-          "--memsize", "2048"
+          "--memsize", "4096"
         ],
         [
           "set", "{{.Name}}",
@@ -125,6 +157,12 @@
         "./scripts/compile-dotnet-assemblies.bat",
         "./scripts/compact.bat"
       ]
+    },
+	{
+      "type": "powershell",
+      "scripts": [
+        "./scripts/removeapp.ps1"
+      ]
     }
   ],
   "post-processors": [
@@ -136,9 +174,9 @@
     }
   ],
   "variables": {
-    "iso_url": "http://care.dlservice.microsoft.com/dl/download/C/3/9/C399EEA8-135D-4207-92C9-6AAB3259F6EF/10240.16384.150709-1700.TH1_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
+    "iso_url": "http://care.dlservice.microsoft.com/dl/download/B/8/B/B8B452EC-DD2D-4A8F-A88C-D2180C177624/15063.0.170317-1834.RS2_RELEASE_CLIENTENTERPRISEEVAL_OEMRET_X64FRE_EN-US.ISO",
     "iso_checksum_type": "sha1",
-    "iso_checksum": "56ab095075be28a90bc0b510835280975c6bb2ce",
+    "iso_checksum": "6c60f91bf0ad7b20f469ab8f80863035c517f34f",
     "autounattend": "./answer_files/10/Autounattend.xml"
   }
 }
